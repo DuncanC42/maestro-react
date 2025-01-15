@@ -1,0 +1,9 @@
+#container {
+    background-color: rgba(0, 0, 0, 0.6); /* Couleur noir-grisâtre avec transparence */
+    border-radius: 10px; /* Coins arrondis */
+    padding: 20px; /* Espacement interne */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Ombre pour un effet subtil */
+    color: white; /* Couleur du texte */
+    font-size: 16px; /* Taille du texte */
+    margin: 20px; /* Espacement externe */
+}
