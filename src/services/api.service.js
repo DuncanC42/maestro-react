@@ -54,6 +54,15 @@ class ApiService {
         });
         return this.handleResponse(response);
     }
+
+    async delete(endpoint, params, queryParams) {
+        const url = this.getFullUrl(endpoint, params, queryParams);
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: API_CONFIG.DEFAULT_HEADERS,
+        });
+        return this.handleResponse(response);
+    }
 }
 
 export const apiService = ApiService.getInstance();

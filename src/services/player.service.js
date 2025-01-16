@@ -14,4 +14,14 @@ export class PlayerService {
             }
         );
     }
+
+    static async removePlayer(playerPseudo, hostName) {
+        console.log('playerPseudo', playerPseudo);
+        return apiService.delete(
+            ApiEndpoints.PLAYER_REMOVE,
+            {},  // no params
+            { playerPseudo, hostName } // correct query params
+        );
+    }
+
 }
