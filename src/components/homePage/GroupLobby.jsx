@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Container } from '../container/Container';
-import { UserX, Copy, PlayCircle, XCircle } from 'lucide-react';
-import { webSocketService } from "../../services/websocket.service.js";
-import { PlayerService } from "../../services/player.service.js";
+import React, {useState, useEffect} from 'react';
+import {Container} from '../container/Container';
+import {UserX, Copy, PlayCircle, XCircle} from 'lucide-react';
+import {webSocketService} from "../../services/websocket.service.js";
+import {PlayerService} from "../../services/player.service.js";
+import {HostService} from "../../services/host.service.js";
 
 const GroupLobby = ({
                         isHost,
@@ -11,6 +12,7 @@ const GroupLobby = ({
                         currentPlayer,
                         onStartGame,
                         onLeaveGroup,
+                        playerWhoJoined,
                         onKickPlayer
                     }) => {
     const [players, setPlayers] = useState([]);
@@ -36,6 +38,9 @@ const GroupLobby = ({
                 setPlayers(prev => [...prev, update.player]);
                 break;
             case 'LEAVE':
+                setPlayers(prev => prev.filter(p => p.pseudo !== update.player.pseudo));
+                break;
+
             case 'KICK':
                 setPlayers(prev => prev.filter(p => p.pseudo !== update.player.pseudo));
                 break;
@@ -52,6 +57,18 @@ const GroupLobby = ({
             console.error('Error kicking player:', err);
         }
     };
+
+    const handleLeaveGroup = async (playerPseudo) => {
+        try {
+            console.log('playerPseudo', playerPseudo);
+            await PlayerService.removePlayer(playerPseudo, groupName); // Supprime de la DB
+            webSocketService.sendLeaveNotification(groupName, playerPseudo); // Envoie via WebSocket
+            onLeaveGroup(); // Déclenche la navigation ou autre action liée au départ
+        } catch (err) {
+            console.error('Error leaving group:', err);
+        }
+    };
+
 
     const handleCopyCode = () => {
         navigator.clipboard.writeText(groupCode);
@@ -74,7 +91,7 @@ const GroupLobby = ({
                             className="p-2 hover:bg-purple-700/50 rounded-full transition-colors"
                             title="Copier le code"
                         >
-                            <Copy size={18} className={copySuccess ? 'text-green-400' : 'text-purple-400'} />
+                            <Copy size={18} className={copySuccess ? 'text-green-400' : 'text-purple-400'}/>
                         </button>
                     </div>
                 </div>
@@ -95,7 +112,7 @@ const GroupLobby = ({
                                     className="p-1 hover:bg-purple-700/50 rounded-full transition-colors"
                                     title="Expulser le joueur"
                                 >
-                                    <UserX size={18} className="text-red-400" />
+                                    <UserX size={18} className="text-red-400"/>
                                 </button>
                             )}
                         </div>
@@ -111,16 +128,16 @@ const GroupLobby = ({
                                 onClick={onStartGame}
                                 className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
                             >
-                                <PlayCircle size={20} />
+                                <PlayCircle size={20}/>
                                 Commencer la partie
                             </button>
                         </>
                     ) : (
                         <button
-                            onClick={onLeaveGroup}
+                            onClick={() => handleLeaveGroup(playerWhoJoined)}
                             className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
                         >
-                            <XCircle size={20} />
+                            <XCircle size={20}/>
                             Quitter le groupe
                         </button>
                     )}

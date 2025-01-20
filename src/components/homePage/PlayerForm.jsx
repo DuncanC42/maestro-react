@@ -38,6 +38,7 @@ export const PlayerForm = () => {
                 isHost={false}
                 groupName={joinedGroup.name}
                 groupCode={joinedGroup.code}
+                playerWhoJoined={playerName}
                 onLeaveGroup={handleLeaveGroup}
             />
         );
